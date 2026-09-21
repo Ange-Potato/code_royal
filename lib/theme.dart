@@ -37,6 +37,7 @@ final appTheme = ThemeData(
   useMaterial3: true,
   colorScheme: scheme,
   scaffoldBackgroundColor: const Color(0xFF081C24),
+  fontFamily: 'Silkscreen',
   textTheme: textTheme,
   cardTheme: const CardThemeData(
     margin: EdgeInsets.all(AppSpacing.sm),

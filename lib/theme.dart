@@ -32,6 +32,10 @@ class AppSpacing {
   static const double md = 16;
   static const double lg = 24;
 }
+class AppColors {
+  static const levelYellow = Color(0xFFF2C14E);
+  static const xpGreen = Color(0xFF2E7D32);
+}
 
 final appTheme = ThemeData(
   useMaterial3: true,

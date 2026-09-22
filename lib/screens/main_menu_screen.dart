@@ -4,6 +4,7 @@ import '../widgets/header_title.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/info_card.dart';
 import '../widgets/hp_bar.dart';
+import 'profile_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -32,7 +33,11 @@ class MainMenuScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(
                 label: 'Profile',
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
+                },
               ),
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(

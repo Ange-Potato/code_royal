@@ -90,4 +90,5 @@ flutter:
   fonts:
     - family: Silkscreen
       fonts:
-        - asset: fonts/slkscr.ttf
+        - asset: fonts/Silkscreen-Regular.ttf
+        - asset: fonts/Silkscreen-Bold.ttf

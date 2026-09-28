@@ -5,6 +5,9 @@ import '../widgets/primary_button.dart';
 import '../widgets/info_card.dart';
 import '../widgets/hp_bar.dart';
 import 'profile_screen.dart';
+import '../data/enemy_bank.dart';
+import '../data/question_bank.dart';
+import 'battle_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
   const MainMenuScreen({super.key});
@@ -28,7 +31,15 @@ class MainMenuScreen extends StatelessWidget {
               const SizedBox(height: AppSpacing.lg * 2),
               PrimaryButton(
                 label: 'Battle',
-                onPressed: () {},
+                onPressed: () {
+                  final enemy = randomEnemy();
+                  final question = randomQuestion(maxDifficulty: 1);
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => BattleScreen(enemy: enemy, question: question),
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(

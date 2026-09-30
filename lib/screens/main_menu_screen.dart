@@ -33,10 +33,13 @@ class MainMenuScreen extends StatelessWidget {
                 label: 'Battle',
                 onPressed: () {
                   final enemy = randomEnemy();
-                  final question = randomQuestion(maxDifficulty: 1);
+                  final question = randomQuestion(maxDifficulty: 2);
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => BattleScreen(enemy: enemy, question: question),
+                      builder: (_) => BattleScreen(
+                        enemy: enemy,
+                        initialQuestion: question,
+                      ),
                     ),
                   );
                 },

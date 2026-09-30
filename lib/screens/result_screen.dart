@@ -9,6 +9,7 @@ class ResultScreen extends StatelessWidget {
   final int level;
   final int xpGained;
   final int score;
+  final VoidCallback? onRetry;
 
   const ResultScreen({
     super.key,
@@ -17,6 +18,7 @@ class ResultScreen extends StatelessWidget {
     required this.level,
     required this.xpGained,
     required this.score,
+    this.onRetry,
   });
 
   @override
@@ -52,7 +54,7 @@ class ResultScreen extends StatelessWidget {
                 children: [
                   PillButton(
                     label: 'Retry',
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: onRetry ?? () => Navigator.of(context).pop(),
                   ),
                   PillButton(
                     label: 'Home',

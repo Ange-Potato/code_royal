@@ -16,16 +16,45 @@ class PlayerProgress {
     this.battlesWon = 0,
   });
 
-  static const sample = PlayerProgress(
-    playerName: 'Player',
-    level: 0,
-    xp: 0,
-    totalScore: 0,
-    battlesWon: 0,
-  );
+  static const sample = PlayerProgress();
 
   double get levelProgress => (level / maxLevel).clamp(0.0, 1.0);
   double get xpProgress => (xp / xpPerLevel).clamp(0.0, 1.0);
   int get xpToNextLevel => xpPerLevel - xp;
   int get levelPercent => (levelProgress * 100).round();
+
+  PlayerProgress copyWith({
+    String? playerName,
+    int? level,
+    int? xp,
+    int? totalScore,
+    int? battlesWon,
+  }) {
+    return PlayerProgress(
+      playerName: playerName ?? this.playerName,
+      level: level ?? this.level,
+      xp: xp ?? this.xp,
+      totalScore: totalScore ?? this.totalScore,
+      battlesWon: battlesWon ?? this.battlesWon,
+    );
+  }
+
+  PlayerProgress gainBattleRewards({
+    required int xpGained,
+    required int scoreGained,
+    required bool won,
+  }) {
+    var newXp = xp + xpGained;
+    var newLevel = level;
+    while (newXp >= xpPerLevel && newLevel < maxLevel) {
+      newXp -= xpPerLevel;
+      newLevel += 1;
+    }
+    return copyWith(
+      level: newLevel,
+      xp: newXp,
+      totalScore: totalScore + scoreGained,
+      battlesWon: won ? battlesWon + 1 : battlesWon,
+    );
+  }
 }

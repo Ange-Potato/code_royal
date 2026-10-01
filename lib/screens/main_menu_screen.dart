@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import '../theme.dart';
+import '../models/player_progress.dart';
+import '../data/enemy_bank.dart';
+import '../data/question_bank.dart';
 import '../widgets/header_title.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/info_card.dart';
 import '../widgets/hp_bar.dart';
-import 'profile_screen.dart';
-import '../data/enemy_bank.dart';
-import '../data/question_bank.dart';
 import 'battle_screen.dart';
+import 'profile_screen.dart';
 
 class MainMenuScreen extends StatelessWidget {
-  const MainMenuScreen({super.key});
+  final PlayerProgress progress;
+  final ValueChanged<PlayerProgress> onProgressUpdated;
+
+  const MainMenuScreen({
+    super.key,
+    required this.progress,
+    required this.onProgressUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -29,16 +40,19 @@ class MainMenuScreen extends StatelessWidget {
                 subtitle: 'Code Battle RPG',
               ),
               const SizedBox(height: AppSpacing.lg * 2),
+
               PrimaryButton(
                 label: 'Battle',
                 onPressed: () {
-                  final enemy = randomEnemy();
-                  final question = randomQuestion(maxDifficulty: 2);
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => BattleScreen(
-                        enemy: enemy,
-                        initialQuestion: question,
+                        enemy: randomEnemy(),
+                        initialQuestion: randomQuestion(
+                          maxDifficulty: (progress.level ~/ 10) + 1,
+                        ),
+                        progress: progress,
+                        onProgressUpdated: onProgressUpdated,
                       ),
                     ),
                   );
@@ -49,14 +63,20 @@ class MainMenuScreen extends StatelessWidget {
                 label: 'Profile',
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => ProfileScreen(progress: progress),
+                    ),
                   );
                 },
               ),
               const SizedBox(height: AppSpacing.md),
               PrimaryButton(
                 label: 'Quit',
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Quit coming soon')),
+                  );
+                },
               ),
               const Spacer(),
               InfoCard(
@@ -66,18 +86,18 @@ class MainMenuScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'LVL: 5',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
-                          ),
+                      'LVL: ${progress.level}',
+                      style: text.bodyMedium?.copyWith(
+                        color: scheme.onSurface,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    const HpBar(
-                      currentHp: 340,
-                      maxHp: 540,
-                      label: 'HP',
+                    HpBar(
+                      currentHp: progress.xp,
+                      maxHp: PlayerProgress.xpPerLevel,
+                      label: 'XP',
                     ),
                   ],
                 ),

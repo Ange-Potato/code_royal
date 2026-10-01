@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/enemy.dart';
 import '../models/question.dart';
+import '../models/player_progress.dart';
 import '../data/question_bank.dart';
 import '../widgets/battle_hp_bar.dart';
 import '../widgets/battle_log.dart';
@@ -12,11 +13,15 @@ import 'result_screen.dart';
 class BattleScreen extends StatefulWidget {
   final Enemy enemy;
   final Question initialQuestion;
+  final PlayerProgress progress;
+  final ValueChanged<PlayerProgress> onProgressUpdated;
 
   const BattleScreen({
     super.key,
     required this.enemy,
     required this.initialQuestion,
+    required this.progress,
+    required this.onProgressUpdated,
   });
 
   @override
@@ -119,6 +124,8 @@ class _BattleScreenState extends State<BattleScreen> {
                 builder: (_) => BattleScreen(
                   enemy: widget.enemy,
                   initialQuestion: randomQuestion(maxDifficulty: 2),
+                  progress: widget.progress,
+                  onProgressUpdated: widget.onProgressUpdated,
                 ),
               ),
             );

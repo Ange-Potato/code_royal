@@ -6,11 +6,7 @@ import '../widgets/profile_stat_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   final PlayerProgress progress;
-
-  const ProfileScreen({
-    super.key,
-    this.progress = PlayerProgress.sample,
-  });
+  const ProfileScreen({super.key, required this.progress});
 
   @override
   Widget build(BuildContext context) {

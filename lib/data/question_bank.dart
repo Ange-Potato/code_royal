@@ -94,11 +94,11 @@ const List<Question> questionBank = [
   ),
 ];
 
-Question randomQuestion({int? maxDifficulty, Random? rng}) {
+Question randomQuestion({int maxDifficulty = 1, Random? rng}) {
   final r = rng ?? Random();
-  final pool = maxDifficulty == null
-      ? questionBank
-      : questionBank.where((q) => q.difficulty <= maxDifficulty).toList();
+  final pool = questionBank
+      .where((q) => q.difficulty <= maxDifficulty)
+      .toList();
   return pool[r.nextInt(pool.length)];
 }
 

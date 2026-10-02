@@ -30,8 +30,6 @@ class BattleScreen extends StatefulWidget {
 
 class _BattleScreenState extends State<BattleScreen> {
   static const int playerMaxHp = 100;
-  static const int playerDamage = 15;
-  static const int enemyDamage = 25;
   static const int maxLogEntries = 3;
 
   late int enemyHp;
@@ -41,6 +39,17 @@ class _BattleScreenState extends State<BattleScreen> {
   final List<String> _log = [];
   int correctCount = 0;
   int wrongCount = 0;
+
+  int _damageFor(int difficulty) {
+    switch (difficulty) {
+      case 3:
+        return 20; // hard
+      case 2:
+        return 15; // medium
+      default:
+        return 10; // easy
+    }
+  }
 
   @override
   void initState() {
@@ -75,17 +84,18 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     final isCorrect = raw == currentQuestion.correctAnswer;
+    final damage = _damageFor(currentQuestion.difficulty);
 
     setState(() {
       if (isCorrect) {
         correctCount++;
-        enemyHp = (enemyHp - enemyDamage).clamp(0, widget.enemy.maxHp);
-        _logEvent('> Correct! -$enemyDamage HP to ${widget.enemy.name}.');
+        enemyHp = (enemyHp - damage).clamp(0, widget.enemy.maxHp);
+        _logEvent('> Correct! -$damage HP to ${widget.enemy.name}.');
       } else {
         wrongCount++;
-        playerHp = (playerHp - playerDamage).clamp(0, playerMaxHp);
+        playerHp = (playerHp - damage).clamp(0, playerMaxHp);
         _logEvent(
-          '> Wrong! Answer was ${currentQuestion.correctAnswer}. -$playerDamage HP.',
+          '> Wrong! Answer was ${currentQuestion.correctAnswer}. -$damage HP.',
         );
       }
       _controller.clear();
@@ -99,7 +109,9 @@ class _BattleScreenState extends State<BattleScreen> {
     }
 
     setState(() {
-      currentQuestion = randomQuestion(maxDifficulty: 2);
+      currentQuestion = randomQuestion(
+        maxDifficulty: (widget.progress.level ~/ 10) + 1,
+      );
     });
   }
 
@@ -108,6 +120,13 @@ class _BattleScreenState extends State<BattleScreen> {
     final xpGained = correctCount * 30 + (isVictory ? 50 : 0);
     final score = correctCount * 100 + (isVictory ? 200 : 0);
 
+    final updated = widget.progress.gainBattleRewards(
+      xpGained: xpGained,
+      scoreGained: score,
+      won: isVictory,
+    );
+    widget.onProgressUpdated(updated);
+
     final navigator = Navigator.of(context);
 
     navigator.pushReplacement(
@@ -115,7 +134,7 @@ class _BattleScreenState extends State<BattleScreen> {
         builder: (_) => ResultScreen(
           isVictory: isVictory,
           enemyName: widget.enemy.name,
-          level: 1,
+          level: updated.level,
           xpGained: xpGained,
           score: score,
           onRetry: () {
@@ -123,8 +142,10 @@ class _BattleScreenState extends State<BattleScreen> {
               MaterialPageRoute(
                 builder: (_) => BattleScreen(
                   enemy: widget.enemy,
-                  initialQuestion: randomQuestion(maxDifficulty: 2),
-                  progress: widget.progress,
+                  initialQuestion: randomQuestion(
+                    maxDifficulty: (updated.level ~/ 10) + 1,
+                  ),
+                  progress: updated,
                   onProgressUpdated: widget.onProgressUpdated,
                 ),
               ),

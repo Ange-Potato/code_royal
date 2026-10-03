@@ -1,17 +1,15 @@
 class Question {
   final String prompt;
   final String code;
-  final Map<String, String> choices; 
-  final String correctAnswer;        
+  final String correctAnswer;
   final String explanation;
-  final int difficulty;              
+  final int difficulty; // 1 easy, 2 medium, 3 hard
 
   const Question({
     required this.prompt,
-    required this.code,
-    required this.choices,
+    this.code = '',
     required this.correctAnswer,
-    required this.explanation,
+    this.explanation = '',
     this.difficulty = 1,
   });
 }

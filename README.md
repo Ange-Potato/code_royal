@@ -12,15 +12,11 @@
 
 | Main Menu | Battle | Result |
 | --- | --- | --- |
-| ![Main Menu](<img width="428" height="912" alt="image" src="https://github.com/user-attachments/assets/51cfa81e-4657-420b-81de-17847d78ca0f" />
-) | ![Battle](<img width="422" height="915" alt="image" src="https://github.com/user-attachments/assets/4a4f74aa-489e-458f-b7f6-efb8ffb35929" />
-) | ![Result](<img width="417" height="912" alt="image" src="https://github.com/user-attachments/assets/14263550-801b-4daa-9495-e5a857366233" />
-) |
+| ![Main Menu](<img width="428" height="912" alt="image" src="https://github.com/user-attachments/assets/51cfa81e-4657-420b-81de-17847d78ca0f" />) | ![Battle](<img width="422" height="915" alt="image" src="https://github.com/user-attachments/assets/4a4f74aa-489e-458f-b7f6-efb8ffb35929" />) | ![Result](<img width="417" height="912" alt="image" src="https://github.com/user-attachments/assets/14263550-801b-4daa-9495-e5a857366233" />) |
 
 | Profile |
 | --- | --- |
-| ![Profile](<img width="425" height="911" alt="image" src="https://github.com/user-attachments/assets/6c0498f2-3fb5-48b9-8405-cdfb977b59d9" />
-) |
+| ![Profile](<img width="425" height="911" alt="image" src="https://github.com/user-attachments/assets/6c0498f2-3fb5-48b9-8405-cdfb977b59d9" />) |
 
 ## What it does
 

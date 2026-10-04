@@ -55,6 +55,7 @@ flutter pub get
 flutter run --dart-define-from-file=dart_defines.json
 
 ## Presentation
+https://github.com/Ange-Potato/code_royal/blob/e346256f4daf925fc354eaeb9d2994a89083a43c/AI-USAGE.md
 Video: https://drive.google.com/file/d/1QVjF58zbqqhj-ANDkVl7k--1BvHdZ0X-/view?usp=sharing
 Slides:
 Square Image: 

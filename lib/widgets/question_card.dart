@@ -60,20 +60,17 @@ class QuestionCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.md),
           SizedBox(
-            width: 180,
+            width: double.infinity,
             child: TextField(
               controller: controller,
               textAlign: TextAlign.center,
-              textCapitalization: TextCapitalization.characters,
-              maxLength: 1,
               style: text.labelSmall?.copyWith(
                 color: scheme.onSurface,
                 fontWeight: FontWeight.bold,
-                letterSpacing: 2,
+                letterSpacing: 1.5,
               ),
               decoration: InputDecoration(
-                counterText: '',
-                hintText: 'YOUR ANSWER...',
+                hintText: 'TYPE YOUR ANSWER...',
                 hintStyle: text.labelSmall?.copyWith(
                   color: scheme.onSurface.withValues(alpha: 0.4),
                   letterSpacing: 1,

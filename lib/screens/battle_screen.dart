@@ -3,6 +3,7 @@ import '../theme.dart';
 import '../models/enemy.dart';
 import '../models/question.dart';
 import '../models/player_progress.dart';
+import '../data/gemini_service.dart';
 import '../data/question_bank.dart';
 import '../widgets/battle_hp_bar.dart';
 import '../widgets/battle_log.dart';
@@ -12,14 +13,12 @@ import 'result_screen.dart';
 
 class BattleScreen extends StatefulWidget {
   final Enemy enemy;
-  final Question initialQuestion;
   final PlayerProgress progress;
   final ValueChanged<PlayerProgress> onProgressUpdated;
 
   const BattleScreen({
     super.key,
     required this.enemy,
-    required this.initialQuestion,
     required this.progress,
     required this.onProgressUpdated,
   });
@@ -34,20 +33,25 @@ class _BattleScreenState extends State<BattleScreen> {
 
   late int enemyHp;
   late int playerHp;
-  late Question currentQuestion;
   final TextEditingController _controller = TextEditingController();
   final List<String> _log = [];
+  final GeminiService _gemini = GeminiService();
+
+  Question? _currentQuestion;
+  bool _loadingQuestion = true;
   int correctCount = 0;
   int wrongCount = 0;
+
+  int get _targetDifficulty => (widget.progress.level ~/ 10) + 1;
 
   int _damageFor(int difficulty) {
     switch (difficulty) {
       case 3:
-        return 20; // hard
+        return 20;
       case 2:
-        return 15; // medium
+        return 15;
       default:
-        return 10; // easy
+        return 10;
     }
   }
 
@@ -56,8 +60,8 @@ class _BattleScreenState extends State<BattleScreen> {
     super.initState();
     enemyHp = widget.enemy.maxHp;
     playerHp = playerMaxHp;
-    currentQuestion = widget.initialQuestion;
     _log.add('> Awaiting attack...');
+    _loadQuestion();
   }
 
   @override
@@ -68,23 +72,54 @@ class _BattleScreenState extends State<BattleScreen> {
 
   void _logEvent(String entry) {
     _log.insert(0, entry);
-    if (_log.length > maxLogEntries) {
-      _log.removeLast();
+    if (_log.length > maxLogEntries) _log.removeLast();
+  }
+
+  Future<void> _loadQuestion() async {
+    setState(() => _loadingQuestion = true);
+    try {
+      if (!_gemini.hasKey) throw StateError('No key');
+      final q = await _gemini.generateQuestion(difficulty: _targetDifficulty);
+      if (!mounted) return;
+      setState(() {
+        _currentQuestion = q;
+        _loadingQuestion = false;
+      });
+    } catch (e, st) {
+      debugPrint('Gemini failed: $e');
+      debugPrint('$st');
+      if (!mounted) return;
+      setState(() {
+        _currentQuestion =
+            randomQuestion(maxDifficulty: _targetDifficulty);
+        _loadingQuestion = false;
+      });
+      _logEvent('> Offline question (no AI).');
     }
   }
 
-  void _handleAttack() {
-    final raw = _controller.text.trim().toUpperCase();
+  bool _answersMatch(String user, String correct) {
+    final u = user.trim().toLowerCase();
+    final c = correct.trim().toLowerCase();
+    if (u == c) return true;
+    final uNum = num.tryParse(u);
+    final cNum = num.tryParse(c);
+    if (uNum != null && cNum != null) return uNum == cNum;
+    return false;
+  }
 
-    if (raw.isEmpty || !['A', 'B', 'C', 'D'].contains(raw)) {
-      setState(() {
-        _logEvent('> Type A, B, C, or D.');
-      });
+  Future<void> _handleAttack() async {
+    final q = _currentQuestion;
+    if (q == null || _loadingQuestion) return;
+
+    final raw = _controller.text.trim();
+    if (raw.isEmpty) {
+      setState(() => _logEvent('> Type an answer first.'));
       return;
     }
 
-    final isCorrect = raw == currentQuestion.correctAnswer;
-    final damage = _damageFor(currentQuestion.difficulty);
+    final isCorrect = _answersMatch(raw, q.correctAnswer);
+    final damage = _damageFor(q.difficulty);
 
     setState(() {
       if (isCorrect) {
@@ -94,11 +129,10 @@ class _BattleScreenState extends State<BattleScreen> {
       } else {
         wrongCount++;
         playerHp = (playerHp - damage).clamp(0, playerMaxHp);
-        _logEvent(
-          '> Wrong! Answer was ${currentQuestion.correctAnswer}. -$damage HP.',
-        );
+        _logEvent('> Wrong! Answer: "${q.correctAnswer}". -$damage HP.');
       }
       _controller.clear();
+      _currentQuestion = null;
     });
 
     FocusScope.of(context).unfocus();
@@ -108,11 +142,7 @@ class _BattleScreenState extends State<BattleScreen> {
       return;
     }
 
-    setState(() {
-      currentQuestion = randomQuestion(
-        maxDifficulty: (widget.progress.level ~/ 10) + 1,
-      );
-    });
+    await _loadQuestion();
   }
 
   void _endBattle() {
@@ -142,9 +172,6 @@ class _BattleScreenState extends State<BattleScreen> {
               MaterialPageRoute(
                 builder: (_) => BattleScreen(
                   enemy: widget.enemy,
-                  initialQuestion: randomQuestion(
-                    maxDifficulty: (updated.level ~/ 10) + 1,
-                  ),
                   progress: updated,
                   onProgressUpdated: widget.onProgressUpdated,
                 ),
@@ -204,12 +231,15 @@ class _BattleScreenState extends State<BattleScreen> {
 
               const SizedBox(height: AppSpacing.md),
 
-              QuestionCard(
-                question: currentQuestion.prompt,
-                code: currentQuestion.code,
-                controller: _controller,
-                onAttack: _handleAttack,
-              ),
+              if (_loadingQuestion || _currentQuestion == null)
+                _LoadingCard()
+              else
+                QuestionCard(
+                  question: _currentQuestion!.prompt,
+                  code: _currentQuestion!.code,
+                  controller: _controller,
+                  onAttack: _handleAttack,
+                ),
 
               const SizedBox(height: AppSpacing.lg),
 
@@ -225,11 +255,48 @@ class _BattleScreenState extends State<BattleScreen> {
               BattleHpBar(currentHp: playerHp, maxHp: playerMaxHp),
 
               const SizedBox(height: AppSpacing.md),
-
               BattleLog(entries: _log),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _LoadingCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.sm),
+        border: Border.all(color: scheme.primary, width: 1.5),
+      ),
+      child: Column(
+        children: [
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: scheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Text(
+            'LOADING QUESTION...',
+            style: text.labelSmall?.copyWith(
+              color: scheme.onSurface,
+              letterSpacing: 2,
+            ),
+          ),
+        ],
       ),
     );
   }

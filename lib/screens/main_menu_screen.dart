@@ -48,9 +48,6 @@ class MainMenuScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (_) => BattleScreen(
                         enemy: randomEnemy(),
-                        initialQuestion: randomQuestion(
-                          maxDifficulty: (progress.level ~/ 10) + 1,
-                        ),
                         progress: progress,
                         onProgressUpdated: onProgressUpdated,
                       ),

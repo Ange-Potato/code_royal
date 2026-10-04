@@ -57,4 +57,4 @@ Slides:
 Square Image: 
 
 ## AI USAGE
-https://github.com/Ange-Potato/code_royal/blob/e346256f4daf925fc354eaeb9d2994a89083a43c/AI-USAGE.md
+https://github.com/Ange-Potato/code_royal/blob/52009434a41bd9548aad07573e66a3e21269eded/AI-USAGE.md

@@ -53,10 +53,6 @@ cp dart_defines.example.json dart_defines.json
 (edit dart_defines.json and paste your GEMINI_API_KEY)
 flutter pub get
 flutter run --dart-define-from-file=dart_defines.json
-
-## Presentation
-Credit: USED Claude
-Video: https://drive.google.com/file/d/1QVjF58zbqqhj-ANDkVl7k--1BvHdZ0X-/view?usp=sharing
 Slides:
 Square Image: 
 

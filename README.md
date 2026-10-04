@@ -7,10 +7,6 @@
 **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
 **Author:** Ange Potato
 
-This repository is public on purpose. There is no `student.json` and there
-should not be one: see `docs/06-security-and-privacy.md` for what a public repo
-means for secrets and personal data.
-
 ---
 
 ## Screenshots

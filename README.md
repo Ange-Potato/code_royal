@@ -61,29 +61,42 @@ Captured from the current Flutter web build at a 390 × 844 phone viewport.
 
 ## Running it yourself
 
+'''bash
+git clone https://github.com/Ange-Potato/YOUR-REPO.git
+cd YOUR-REPO
+flutter pub get
+flutter run
+Verified with Flutter 3.19+ (stable). No environment variables, API keys, or
+backend URLs are required for the default offline build.
+
+Optional: enable AI-generated questions
 The app works offline using the built-in question bank. To let Gemini write
 fresh questions instead:
 
-1. Get an API key at https://aistudio.google.com/app/apikey
-2. Restrict it in Google Cloud Console:
-- API restrictions → Generative Language API only
-- Set a quota cap (100 requests/day is plenty for a demo)
-3. Copy the example and paste your key:
+Get an API key at https://aistudio.google.com/app/apikey
+
+Restrict it in Google Cloud Console:
+
+API restrictions → Generative Language API only
+
+Set a quota cap (100 requests/day is plenty for a demo)
+
+Copy the example and paste your key:
+'''
+
 ```bash
 cp dart_defines.example.json dart_defines.json
 # edit dart_defines.json and paste your GEMINI_API_KEY
 ```
-4. Run with the flag:
-```bash
+Run with the flag:
+'''bash
 flutter run --dart-define-from-file=dart_defines.json
-```
+'''
+
 If the key is missing or the API call fails, the app falls back to the local
 bank automatically and logs > Offline question (no AI). in the battle log.
 dart_defines.json is gitignored — never commit it.
-
-## Project structure
-
-```text
+'''bash
 Project structure
 text
 lib/
@@ -113,9 +126,7 @@ lib/
     ├── battle_log.dart
     ├── profile_stat_card.dart
     └── question_card.dart
-```
-
-## Privacy and secrets
+'''
 
 The current build is local-first. Every player's level, XP, score, and
 battles-won count lives on their own device via shared_preferences and is

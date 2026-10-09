@@ -1,21 +1,22 @@
-markdown
 # Code Royal
 
 *A mobile programming battle RPG where practising Dart questions feels like fighting monsters.*
 
-**Live demo:** [Open Code Royal →](https://YOURUSERNAME.github.io/YOUR-REPO/)
-**Demo video:** [Watch the demo →](https://drive.google.com/file/d/1QVjF58zbqqhj-ANDkVl7k--1BvHdZ0X-/view?usp=drive_link)
-**Presentation slides:** [View the slides →](PASTE-SLIDES-LINK-HERE)
-**Square image:** [View the square image →](PASTE-SQUARE-IMAGE-LINK-HERE)
+**Demo video:** [Watch the demo →](https://drive.google.com/file/d/1QVjF58zbqqhj-ANDkVl7k--1BvHdZ0X-/view?usp=sharing)
 
-**Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
+**Presentation slides:** [View the slides →](https://drive.google.com/file/d/15Y2Xn7z9Vhr_Vi0WxzGwAF5sjrJIYdt6/view?usp=sharing)
+
+**Square image:** [View the square image →](https://drive.google.com/file/d/19OG2wgVK4L0N6t_xIgLwbrs_K7LLAVye/view?usp=sharing)
+
+**Course:** Applications Development and Emerging Technologies
+
 **Author:** [Ange-Potato](https://github.com/Ange-Potato)
 
 ---
 
 ## Screenshots
 
-<img src="PASTE-SQUARE-IMAGE-URL-HERE" width="300" alt="Code Royal square image">
+<img src="https://drive.google.com/uc?export=view&id=19OG2wgVK4L0N6t_xIgLwbrs_K7LLAVye" width="300" alt="Code Royal square image">
 
 Captured from the current Flutter web build at a 390 × 844 phone viewport.
 
@@ -57,44 +58,32 @@ Captured from the current Flutter web build at a 390 × 844 phone viewport.
 | AI (optional) | `google_generative_ai` — Gemini-generated questions, falls back offline |
 | Font | Silkscreen (SIL Open Font License) |
 
+
 ## Running it yourself
 
-'''bash
-git clone https://github.com/Ange-Potato/YOUR-REPO.git
-cd YOUR-REPO
-flutter pub get
-flutter run
-Verified with Flutter 3.19+ (stable). No environment variables, API keys, or
-backend URLs are required for the default offline build.
-
-Optional: enable AI-generated questions
 The app works offline using the built-in question bank. To let Gemini write
 fresh questions instead:
 
-Get an API key at https://aistudio.google.com/app/apikey
-
-Restrict it in Google Cloud Console:
-
-API restrictions → Generative Language API only
-
-Set a quota cap (100 requests/day is plenty for a demo)
-
-Copy the example and paste your key:
-'''
-
+1. Get an API key at https://aistudio.google.com/app/apikey
+2. Restrict it in Google Cloud Console:
+- API restrictions → Generative Language API only
+- Set a quota cap (100 requests/day is plenty for a demo)
+3. Copy the example and paste your key:
 ```bash
 cp dart_defines.example.json dart_defines.json
 # edit dart_defines.json and paste your GEMINI_API_KEY
 ```
-Run with the flag:
-'''bash
+4. Run with the flag:
+```bash
 flutter run --dart-define-from-file=dart_defines.json
-'''
-
+```
 If the key is missing or the API call fails, the app falls back to the local
 bank automatically and logs > Offline question (no AI). in the battle log.
 dart_defines.json is gitignored — never commit it.
-'''bash
+
+## Project structure
+
+```text
 Project structure
 text
 lib/
@@ -124,9 +113,10 @@ lib/
     ├── battle_log.dart
     ├── profile_stat_card.dart
     └── question_card.dart
-'''
+```
 
-Privacy and secrets
+## Privacy and secrets
+
 The current build is local-first. Every player's level, XP, score, and
 battles-won count lives on their own device via shared_preferences and is
 never sent to a server. There is no user account, no backend, and no data
@@ -144,41 +134,52 @@ All sample data — question bank, enemy names, default player name — is
 invented. No classmate names, emails, or real user data appear anywhere in the
 repository.
 
-Known issues and next steps
-Live demo falls back to the offline bank. The deployed build does not
+## Known issues and next steps
+
+1. Live demo falls back to the offline bank. The deployed build does not
 ship with a Gemini key, so it uses the local question bank. Running locally
 with --dart-define-from-file=dart_defines.json enables AI questions.
 
-Question bank is small (10 items). Fine for a demo; not a curriculum.
+2. Question bank is small (10 items). Fine for a demo; not a curriculum.
 More questions can be added to lib/data/question_bank.dart in seconds.
 
-No sound effects yet. audioplayers is the next stretch goal listed in
+3. No sound effects yet. audioplayers is the next stretch goal listed in
 the proposal.
 
-No per-question timer. Hard questions are risky because of the damage
+4. No per-question timer. Hard questions are risky because of the damage
 they deal, but there is no clock pressure yet.
 
-Only one enemy sprite is bundled per enemy. More variety is planned.
+5. Only one enemy sprite is bundled per enemy. More variety is planned.
 
-No difficulty override on the Profile screen. Difficulty currently
+6. No difficulty override on the Profile screen. Difficulty currently
 ramps automatically with player level.
 
-Next: audioplayers for battle sound effects, a per-question timer, a larger
-question bank, and a difficulty setting on the Profile screen.
+Next: a working audioplayers integration, better Gemini prompts for
+unambiguous answers, a per-question timer, a larger question bank, and a
+difficulty setting on the Profile screen.
 
-Project documentation
-Document	
-Proposal	the problem, users, scope, and storage decision
-Mockup and wireframes	what each screen looks like
-Design system	palette, type, spacing, components
-Weekly reports	one entry per week
-Demo video	the recording and what it shows
-Security and privacy	repository security state
-AI use
+## Project documentation
+
+| Document | |
+| --- | --- |
+| [Proposal](assets/docs/01-proposal.pdf) | the problem, users, scope, and storage decision |
+| [Mockup and wireframes](assets/docs/02-mockup.pdf) | what each screen looks like |
+| [Design system](assets/docs/03-design-system.pdf) | palette, type, spacing, components |
+| [Security and privacy](assets/docs/security-and-privacy.md) | repository security state |
+
+
+## AI use
+
 https://img.shields.io/badge/built%20with-AI%20assistance-0b5fff
 
 Assistant used: Claude. A large part of the scaffolding was AI-assisted —
 widget structure, the theme, and the initial battle loop. I wrote or adjusted
 the game rules (difficulty-scaled damage, XP roll-over, free-text answer
 matching), the persistence layer wiring, and the API key handling. Full
-account in AI-USAGE.md
+account in AI-USAGE.md.
+
+## Licence
+
+All Rights Reserved. See [LICENSE](LICENSE). This repository is publicly
+visible for coursework review only and does not grant any license to use,
+copy, or redistribute.

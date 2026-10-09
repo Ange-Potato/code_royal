@@ -2,6 +2,8 @@
 
 *A mobile programming battle RPG where practising Dart questions feels like fighting monsters.*
 
+**Live demo:** [Open Code Royal →](https://Ange-Potato.github.io/code_royal/)
+
 **Demo video:** [Watch the demo →](https://drive.google.com/file/d/1QVjF58zbqqhj-ANDkVl7k--1BvHdZ0X-/view?usp=sharing)
 
 **Presentation slides:** [View the slides →](https://drive.google.com/file/d/15Y2Xn7z9Vhr_Vi0WxzGwAF5sjrJIYdt6/view?usp=sharing)
@@ -61,7 +63,7 @@ Captured from the current Flutter web build at a 390 × 844 phone viewport.
 
 ## Running it yourself
 
-'''bash
+```bash
 git clone https://github.com/Ange-Potato/YOUR-REPO.git
 cd YOUR-REPO
 flutter pub get
@@ -82,23 +84,24 @@ API restrictions → Generative Language API only
 Set a quota cap (100 requests/day is plenty for a demo)
 
 Copy the example and paste your key:
-'''
+```
 
 ```bash
 cp dart_defines.example.json dart_defines.json
 # edit dart_defines.json and paste your GEMINI_API_KEY
 ```
 Run with the flag:
-'''bash
+```bash
 flutter run --dart-define-from-file=dart_defines.json
-'''
+```
 
 If the key is missing or the API call fails, the app falls back to the local
 bank automatically and logs > Offline question (no AI). in the battle log.
 dart_defines.json is gitignored — never commit it.
-'''bash
+
 Project structure
-text
+
+```text
 lib/
 ├── main.dart                         # app entry, loads PlayerProgress, hosts MaterialApp
 ├── theme.dart                        # ColorScheme, TextTheme, AppSpacing, AppColors
@@ -126,7 +129,7 @@ lib/
     ├── battle_log.dart
     ├── profile_stat_card.dart
     └── question_card.dart
-'''
+```
 
 The current build is local-first. Every player's level, XP, score, and
 battles-won count lives on their own device via shared_preferences and is

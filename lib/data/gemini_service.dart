@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'dart:math';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import '../models/question.dart';
 
@@ -9,14 +9,31 @@ class GeminiService {
 
   bool get hasKey => _apiKey.isNotEmpty;
 
-  Future<Question> generateQuestion({required int difficulty}) async {
-    debugPrint('GeminiService: hasKey=$hasKey, keyLen=${_apiKey.length}');
+  static const List<String> _topics = [
+    'variables and types',
+    'control flow (if / switch)',
+    'loops (for / while)',
+    'collections (List / Map / Set)',
+    'functions and arrow syntax',
+    'classes and constructors',
+    'inheritance and mixins',
+    'null safety and ?. / ??',
+    'string methods',
+    'async / await and Future',
+    'exceptions (try / catch)',
+    'type inference and generics',
+  ];
 
+  Future<Question> generateQuestion({
+    required int difficulty,
+    List<String> previousPrompts = const [],
+  }) async {
     if (!hasKey) throw StateError('Missing GEMINI_API_KEY.');
 
     final model = GenerativeModel(
-      model: 'gemini-3.5-flash',
+      model: 'gemini-2.0-flash',
       apiKey: _apiKey,
+      generationConfig: GenerationConfig(temperature: 1.2),
     );
 
     final label = switch (difficulty) {
@@ -25,10 +42,21 @@ class GeminiService {
       _ => 'hard',
     };
 
-    final prompt = '''
-Generate one $label Dart programming question for a learning game.
+    final topic = _topics[Random().nextInt(_topics.length)];
 
-Return ONLY valid JSON (no markdown, no code fences):
+    final avoid = previousPrompts.isEmpty
+        ? '(none yet)'
+        : previousPrompts.map((p) => '- $p').join('\n');
+
+    final prompt = '''
+Generate ONE $label Dart programming question for a learning game.
+
+Topic to focus on: $topic.
+
+Do NOT reuse or rephrase any of these prompts already asked in this session:
+$avoid
+
+Return ONLY valid JSON, no markdown, no code fences:
 {
   "prompt": "short question text, no more than 12 words",
   "code": "a short code snippet (1-4 lines) or an empty string",
@@ -37,14 +65,14 @@ Return ONLY valid JSON (no markdown, no code fences):
 }
 
 Rules:
-- The correctAnswer must be short, unambiguous, and case-insensitive matchable.
+- The correctAnswer must be one word, one number, or one short symbol.
+- It must be unambiguous and case-insensitively matchable.
 - Difficulty: $label.
-- Topic: Dart language, control flow, collections, functions, or OOP basics.
+- Be creative. Vary the phrasing and the scenario from previous questions.
 ''';
 
     final response = await model.generateContent([Content.text(prompt)]);
     final raw = response.text ?? '';
-    debugPrint('Gemini raw response: $raw');
     final data = jsonDecode(_extractJson(raw)) as Map<String, dynamic>;
 
     return Question(

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../models/enemy.dart';
@@ -36,13 +37,14 @@ class _BattleScreenState extends State<BattleScreen> {
   final TextEditingController _controller = TextEditingController();
   final List<String> _log = [];
   final GeminiService _gemini = GeminiService();
+  final QuestionPicker _picker = QuestionPicker();
+  final Random _rng = Random();
+  final List<String> _askedPrompts = [];
 
   Question? _currentQuestion;
   bool _loadingQuestion = true;
   int correctCount = 0;
   int wrongCount = 0;
-
-  int get _targetDifficulty => (widget.progress.level ~/ 10) + 1;
 
   int _damageFor(int difficulty) {
     switch (difficulty) {
@@ -52,6 +54,28 @@ class _BattleScreenState extends State<BattleScreen> {
         return 15;
       default:
         return 10;
+    }
+  }
+
+  int _rollDifficulty() {
+    final level = widget.progress.level;
+    final roll = _rng.nextDouble();
+
+    if (level < 10) {
+      // 65% easy, 30% medium, 5% hard
+      if (roll < 0.65) return 1;
+      if (roll < 0.95) return 2;
+      return 3;
+    } else if (level < 20) {
+      // 35% easy, 40% medium, 25% hard
+      if (roll < 0.35) return 1;
+      if (roll < 0.75) return 2;
+      return 3;
+    } else {
+      // 15% easy, 35% medium, 50% hard
+      if (roll < 0.15) return 1;
+      if (roll < 0.50) return 2;
+      return 3;
     }
   }
 
@@ -77,25 +101,41 @@ class _BattleScreenState extends State<BattleScreen> {
 
   Future<void> _loadQuestion() async {
     setState(() => _loadingQuestion = true);
-    try {
-      if (!_gemini.hasKey) throw StateError('No key');
-      final q = await _gemini.generateQuestion(difficulty: _targetDifficulty);
-      if (!mounted) return;
-      setState(() {
-        _currentQuestion = q;
-        _loadingQuestion = false;
-      });
-    } catch (e, st) {
-      debugPrint('Gemini failed: $e');
-      debugPrint('$st');
-      if (!mounted) return;
-      setState(() {
-        _currentQuestion =
-            randomQuestion(maxDifficulty: _targetDifficulty);
-        _loadingQuestion = false;
-      });
-      _logEvent('> Offline question (no AI).');
+
+    final difficulty = _rollDifficulty();
+
+    if (_gemini.hasKey) {
+      try {
+        final q = await _gemini.generateQuestion(
+          difficulty: difficulty,
+          previousPrompts: _askedPrompts,
+        );
+        if (!mounted) return;
+        _askedPrompts.add(q.prompt);
+        setState(() {
+          _currentQuestion = q;
+          _loadingQuestion = false;
+        });
+        return;
+      } catch (e) {
+        debugPrint('Gemini failed: $e');
+        if (mounted) _logEvent('> Offline question (no AI).');
+      }
     }
+
+    var q = _picker.pick(difficulty: difficulty);
+
+    if (q == null) {
+      _picker.reset();
+      q = _picker.pick(difficulty: difficulty);
+      if (mounted) _logEvent('> Question bank cycled.');
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _currentQuestion = q;
+      _loadingQuestion = false;
+    });
   }
 
   bool _answersMatch(String user, String correct) {
@@ -232,7 +272,7 @@ class _BattleScreenState extends State<BattleScreen> {
               const SizedBox(height: AppSpacing.md),
 
               if (_loadingQuestion || _currentQuestion == null)
-                _LoadingCard()
+                const _LoadingCard()
               else
                 QuestionCard(
                   question: _currentQuestion!.prompt,
@@ -265,6 +305,8 @@ class _BattleScreenState extends State<BattleScreen> {
 }
 
 class _LoadingCard extends StatelessWidget {
+  const _LoadingCard();
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;

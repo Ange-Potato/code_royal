@@ -1,6 +1,6 @@
 # Code Royal
 
-*A mobile programming battle RPG where practising Dart questions feels like fighting monsters.*
+*A mobile programming battle RPG where practicing Dart questions feels like fighting monsters.*
 
 **Live demo:** [Open Code Royal →](https://Ange-Potato.github.io/code_royal/)
 

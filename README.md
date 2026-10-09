@@ -184,13 +184,13 @@ difficulty setting on the Profile screen.
 
 ## AI use
 
-https://img.shields.io/badge/built%20with-AI%20assistance-0b5fff
+![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-0b5fff)
 
 Assistant used: Claude. A large part of the scaffolding was AI-assisted —
 widget structure, the theme, and the initial battle loop. I wrote or adjusted
 the game rules (difficulty-scaled damage, XP roll-over, free-text answer
 matching), the persistence layer wiring, and the API key handling. Full
-account in AI-USAGE.md.
+account in [AI-USAGE.md](AI-USAGE.md).
 
 ## Licence
 

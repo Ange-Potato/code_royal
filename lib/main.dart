@@ -3,6 +3,7 @@ import 'theme.dart';
 import 'models/player_progress.dart';
 import 'data/player_repository.dart';
 import 'screens/main_menu_screen.dart';
+import 'widgets/phone_frame.dart';
 
 void main() {
   runApp(const CodeRoyalApp());
@@ -47,6 +48,7 @@ class _CodeRoyalAppState extends State<CodeRoyalApp> {
       title: 'Code Royal',
       debugShowCheckedModeBanner: false,
       theme: appTheme,
+      builder: (context, child) => PhoneFrame(child: child!),
       home: _loading
           ? const Scaffold(
               body: Center(child: CircularProgressIndicator()),
